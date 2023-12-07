@@ -1,6 +1,6 @@
 package com.dgioto.drawingforchildren
 
-import android.graphics.Color
+import android.R.attr
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,10 +16,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import com.dgioto.drawingforchildren.ui.BottomPanel
 import com.dgioto.drawingforchildren.ui.theme.DrawingForChildrenTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,11 +32,17 @@ class MainActivity : ComponentActivity() {
             }
             DrawingForChildrenTheme {
                 Column {
-                    BottomPanel { color ->
-                        //обновляет значение объекта pathData, заменяя его на копию
-                        // с обновленным полем color
+                    BottomPanel(
+                        { color ->
+                            //обновляет значение объекта pathData, заменяя его на копию
+                            // с обновленным полем color
+                            pathData.value = pathData.value.copy(
+                                color = color
+                            )
+                        }
+                    ){ lineWidth ->
                         pathData.value = pathData.value.copy(
-                            color = color
+                            lineWidth = lineWidth
                         )
                     }
                     DrawCanvas(pathData)
@@ -99,7 +107,10 @@ fun DrawCanvas(pathData: MutableState<PathData>) {
             drawPath(
                 pathData.path,
                 color = pathData.color,
-                style = Stroke(10f)
+                style = Stroke(
+                    pathData.lineWidth,
+                    cap = StrokeCap.Round
+                )
             )
         }
     }
